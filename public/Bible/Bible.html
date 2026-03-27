@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRIPTURE_OS // TERMINAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5efe0;
+    --parchment-dark: #e8dfc8;
+    --ink: #1a1208;
+    --gold: #b8860b;
+    --red: #8b1a1a;
+    --sidebar-w: 220px;
+    --header-h: 60px;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #eee;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevents double scrollbars */
+    font-family: 'Roboto Mono', monospace;
+  }
+
+  /* TOP COMMAND BAR */
+  header {
+    height: var(--header-h);
+    background: #000;
+    border-bottom: 2px solid var(--gold);
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 100;
+  }
+
+  .logo { 
+    font-family: 'Cinzel', serif; 
+    color: var(--gold); 
+    letter-spacing: 3px; 
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(184, 134, 11, 0.4);
+  }
+
+  select {
+    background: #111;
+    color: var(--gold);
+    border: 1px solid #444;
+    padding: 6px 12px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--gold); }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR TERMINAL */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: #0a0a0a;
+    border-right: 1px solid #222;
+    overflow-y: auto;
+    padding: 20px 0;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    color: #444;
+    padding: 0 20px 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .bk {
+    display: block; width: 100%; padding: 10px 20px;
+    background: transparent; border: none; color: #777;
+    text-align: left; cursor: pointer; font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+    transition: 0.2s;
+  }
+  .bk:hover { background: #151515; color: var(--gold); }
+  .bk.on { color: #fff; background: #1a1a1a; border-left: 4px solid var(--gold); }
+
+  /* MAIN SCROLL AREA */
+  main { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 60px 20px; 
+    background: #111; 
+    background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
+    background-size: 30px 30px;
+    display: flex; 
+    justify-content: center;
+    scroll-behavior: smooth;
+  }
+
+  /* THE PARCHMENT PAGE */
+  .page {
+    max-width: 850px; width: 100%;
+    background: var(--parchment);
+    background-image: linear-gradient(to bottom, var(--parchment), var(--parchment-dark));
+    padding: 80px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    position: relative;
+    color: var(--ink);
+    border-radius: 2px;
+    min-height: fit-content;
+  }
+
+  .ch-head { 
+    text-align: center; 
+    margin-bottom: 40px; 
+    border-bottom: 2px double rgba(0,0,0,0.1); 
+    padding-bottom: 30px; 
+  }
+
+  .btitle { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; color: #000; }
+  .cnum { font-family: 'Roboto Mono', monospace; font-size: 12px; color: var(--red); margin-top: 10px; letter-spacing: 4px; }
+  
+  .vbody { 
+    line-height: 1.9; 
+    font-size: 1.2rem; 
+    text-align: justify; 
+    font-family: 'EB Garamond', serif;
+  }
+
+  .vn { 
+    font-family: 'Roboto Mono', monospace; 
+    font-size: 11px; 
+    color: var(--red); 
+    font-weight: bold;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+  
+  .dc {
+    font-family: 'Cinzel', serif;
+    font-size: 65px;
+    float: left;
+    line-height: 50px;
+    padding-top: 10px;
+    padding-right: 12px;
+    color: var(--red);
+    font-weight: bold;
+  }
+
+  /* LOADING STATE */
+  .spin-wrap { 
+    text-align: center; 
+    padding: 100px; 
+    color: var(--gold);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* FOOTER NAV */
+  .pfooter {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+  }
+
+  .fbtn {
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 8px 15px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+  }
+  .fbtn:hover { background: var(--ink); color: var(--parchment); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✦ SCRIPTURE_OS</div>
+  <select id="ot-book" onchange="otBookChange()"></select>
+  <select id="ot-ch" onchange="otChChange()"></select>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-label">New Testament</div>
+  </nav>
+  <main id="scroll-container">
+    <div class="page" id="content">
+      <div class="spin-wrap">[ SYSTEM_IDLE ]</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const OT = [
+  {n:'Genesis',c:50},{n:'Exodus',c:40},{n:'Leviticus',c:27},{n:'Numbers',c:36},
+  {n:'Deuteronomy',c:34},{n:'Joshua',c:24},{n:'Judges',c:21},{n:'Ruth',c:4},
+  {n:'1 Samuel',c:31},{n:'2 Samuel',c:24},{n:'1 Kings',c:22},{n:'2 Kings',c:25},
+  {n:'1 Chronicles',c:29},{n:'2 Chronicles',c:36},{n:'Ezra',c:10},{n:'Nehemiah',c:13},
+  {n:'Esther',c:10},{n:'Job',c:42},{n:'Psalms',c:150},{n:'Proverbs',c:31},
+  {n:'Ecclesiastes',c:12},{n:'Song of Solomon',c:8},{n:'Isaiah',c:66},
+  {n:'Jeremiah',c:52},{n:'Lamentations',c:5},{n:'Ezekiel',c:48},{n:'Daniel',c:12},
+  {n:'Hosea',c:14},{n:'Joel',c:3},{n:'Amos',c:9},{n:'Obadiah',c:1},
+  {n:'Jonah',c:4},{n:'Micah',c:7},{n:'Nahum',c:3},{n:'Habakkuk',c:3},
+  {n:'Zephaniah',c:3},{n:'Haggai',c:2},{n:'Zechariah',c:14},{n:'Malachi',c:4}
+];
+
+const NT = [
+  {n:'Matthew',c:28},{n:'Mark',c:16},{n:'Luke',c:24},{n:'John',c:21},
+  {n:'Acts',c:28},{n:'Romans',c:16},{n:'1 Corinthians',c:16},{n:'2 Corinthians',c:13},
+  {n:'Galatians',c:6},{n:'Ephesians',c:6},{n:'Philippians',c:4},{n:'Colossians',c:4},
+  {n:'1 Thessalonians',c:5},{n:'2 Thessalonians',c:3},{n:'1 Timothy',c:6},
+  {n:'2 Timothy',c:4},{n:'Titus',c:3},{n:'Philemon',c:1},{n:'Hebrews',c:13},
+  {n:'James',c:5},{n:'1 Peter',c:5},{n:'2 Peter',c:3},{n:'1 John',c:5},
+  {n:'2 John',c:1},{n:'3 John',c:1},{n:'Jude',c:1},{n:'Revelation',c:22}
+];
+
+let otB = 18, ntB = 0, ch = 1, currentTab = 'OT'; // Default to Psalms
+
+function init() {
+  const otSel = document.getElementById('ot-book');
+  otSel.innerHTML = OT.map((b,i)=>`<option value="${i}" ${i===otB?'selected':''}>${b.n}</option>`).join('');
+  
+  const sb = document.getElementById('sidebar');
+  NT.forEach((b,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'bk';
+    btn.id = 'nt-' + i;
+    btn.textContent = b.n;
+    btn.onclick = () => { 
+      ntB = i; ch = 1; currentTab = 'NT'; 
+      document.querySelectorAll('.bk').forEach(el => el.classList.remove('on'));
+      btn.classList.add('on');
+      loadCh(); 
+    };
+    sb.appendChild(btn);
+  });
+
+  rebuildOTCh();
+  loadCh();
+}
+
+function rebuildOTCh() {
+  const s = document.getElementById('ot-ch');
+  const count = currentTab === 'OT' ? OT[otB].c : NT[ntB].c;
+  s.innerHTML = Array.from({length:count},(_,i)=>`<option value="${i+1}">Chapter ${i+1}</option>`).join('');
+  s.value = ch;
+}
+
+function otBookChange() { 
+  otB = +document.getElementById('ot-book').value; 
+  ch = 1; 
+  currentTab = 'OT'; 
+  document.querySelectorAll('.bk').forEach(el => el.classList.remove('on'));
+  rebuildOTCh(); 
+  loadCh(); 
+}
+
+function otChChange() { 
+  ch = +document.getElementById('ot-ch').value; 
+  loadCh(); 
+}
+
+function navigate(dir) {
+  const book = currentTab === 'OT' ? OT[otB] : NT[ntB];
+  if (dir === 1) { // Next
+    if (ch < book.c) { ch++; }
+    else { ch = 1; /* Logic for next book could go here */ }
+  } else { // Prev
+    if (ch > 1) { ch--; }
+  }
+  rebuildOTCh();
+  loadCh();
+}
+
+async function loadCh() {
+  const book = currentTab === 'OT' ? OT[otB] : NT[ntB];
+  const el = document.getElementById('content');
+  const scrollContainer = document.getElementById('scroll-container');
+  
+  el.innerHTML = '<div class="spin-wrap">>> ACCESSING_SERVER_ARCHIVE...</div>';
+
+  try {
+    const response = await fetch(`https://bible-api.com/${book.n}+${ch}?translation=web`);
+    const data = await response.json();
+    
+    let html = `<div class="ch-head">
+                  <div class="btitle">${book.n}</div>
+                  <div class="cnum">CHAPTER ${ch}</div>
+                </div>`;
+    html += `<div class="vbody">`;
+    
+    data.verses.forEach((v, i) => {
+      const dropCap = (i === 0) ? `class="dc"` : '';
+      html += `<span><sup class="vn">${v.verse}</sup><span ${dropCap}>${v.text}</span></span> `;
+    });
+    
+    html += `</div>`;
+    
+    // Add page footer
+    html += `<div class="pfooter">
+               <div>WORLD ENGLISH BIBLE // PUBLIC DOMAIN</div>
+               <div>${book.n.toUpperCase()} ${ch}</div>
+             </div>`;
+
+    el.innerHTML = html;
+    scrollContainer.scrollTop = 0; // Reset scroll to top of chapter
+  } catch (err) {
+    el.innerHTML = `<div class="spin-wrap">SYSTEM_ERROR: CONNECTION_TIMEOUT <br> ${err.message}</div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
