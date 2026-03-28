@@ -26,6 +26,13 @@ app.use((req, res) => {
 const server = createServer();
 
 server.on("request", (req, res) => {
+	// Force HTTPS on EvenNode
+	if (req.headers["x-forwarded-proto"] === "http") {
+		res.writeHead(301, { Location: "https://" + req.headers.host + req.url });
+		res.end();
+		return;
+	}
+
 	res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
 	res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
 	app(req, res);
