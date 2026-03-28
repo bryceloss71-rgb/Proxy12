@@ -1,4 +1,4 @@
-app = "my-uv-proxy"
+app = "mygrandmafellproxy2026"
 primary_region = "iad"
 
 [http_service]
