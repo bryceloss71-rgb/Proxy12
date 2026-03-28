@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "headers": [
+    {
+      "source": "/uv/(.*)",
+      "headers": [
+        { "key": "Service-Worker-Allowed", "value": "/" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/uv/uv.bundle.js",
+      "destination": "/uv/uv.bundle.js"
+    },
+    {
+      "source": "/uv/uv.config.js",
+      "destination": "/uv/uv.config.js"
+    }
+  ]
+}
