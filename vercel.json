@@ -1,17 +1,15 @@
 {
   "version": 2,
   "rewrites": [
-    {
-      "source": "/uv/(.*)",
-      "destination": "/api/index.js"
-    }
+    { "source": "/uv/(.*)", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ],
   "headers": [
     {
       "source": "/uv/uv.sw.js",
       "headers": [
-        { "key": "Service-Worker-Allowed", "value": "/" },
-        { "key": "Content-Type", "value": "application/javascript" }
+        { "key": "Content-Type", "value": "application/javascript" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
       ]
     }
   ]

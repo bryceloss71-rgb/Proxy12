@@ -1,13 +1,19 @@
-const express = require('express');
-const { uvPath } = require('@titaniumnetwork-dev/ultraviolet');
+import express from 'express';
+import { uvPath } from '@titaniumnetwork-dev/ultraviolet';
+import { createServer } from 'node:http';
+
 const app = express();
 
-// This tells Express to serve the actual UV engine files 
-// from the node_modules folder when /uv/ is requested.
+// This serves the missing uv.sw.js, uv.bundle.js, etc.
 app.use('/uv/', express.static(uvPath));
 
-app.get('/api/status', (req, res) => {
-  res.json({ status: 'running' });
-});
+// Serve your frontend static files (index.html, etc.)
+app.use(express.static('public')); 
 
-module.exports = app;
+// For Vercel, we export the app. 
+// We keep the listen check so it still works locally.
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => console.log('Running on http://localhost:3000'));
+}
+
+export default app;
